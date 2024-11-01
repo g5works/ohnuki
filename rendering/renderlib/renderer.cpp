@@ -18,10 +18,8 @@ GLRenderer::GLRenderer(unsigned int platform) {
         /* Initialize the library */
         if (!glfwInit())
             exit(-1);
-
-
+        
         //this is some mac specific bs
-
         if (platform == PLATFORM_MAC) {
             glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
             glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);

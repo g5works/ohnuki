@@ -6,8 +6,8 @@
 #include <string>
 #include <fstream>
 #include <sstream>
-#include "gl.h"
-#include "renderer.h"
+#include "rendering/basetypes/gl.h"
+#include "rendering/renderlib/renderer.h"
 
 int main(void)
 {
@@ -48,7 +48,7 @@ int main(void)
 
     unsigned int x = 0;
     unsigned int y = 0;
-    /* Loop until the user closes the window */
+
     while (!glfwWindowShouldClose(rndr.win))
     {
         glHClearErrors();
