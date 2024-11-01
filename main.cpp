@@ -40,11 +40,11 @@ int main(void)
 
     // OpenGL now knows what we want to draw, but not how it should draw it. For that, we need shaders! (or not, kek)
     GLShaders s("shaders/vertex.glsl", "shaders/fragment.glsl");
-    GLShaders s2("shaders/vertex.glsl", "shaders/fragment2.glsl");
+    GLShaders s2("shaders/vertex2.glsl", "shaders/fragment2.glsl");
 
 
     rndr.setShader(s);
-    rndr.set(vo, i);
+    rndr.set(vo2);
 
     unsigned int x = 0;
     unsigned int y = 0;
@@ -52,7 +52,24 @@ int main(void)
     while (!glfwWindowShouldClose(rndr.win))
     {
         glHClearErrors();
+
+        unsigned int uni = glGetUniformLocation(s2.prog, "xtransf");
+        glUniform1f(uni, sin(0.05*x));
+
+        if (x == 100) {
+            y++;
+            if (y%2 == 0) {
+                rndr.setShader(s);
+                rndr.set(vo2);
+            }
+            else {
+                rndr.setShader(s2);
+                rndr.set(vo, i);
+            }
+            x = 0;
+        }
         x++;
+
 
         rndr.draw();
         glfwPollEvents();

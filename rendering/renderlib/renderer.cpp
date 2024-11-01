@@ -6,7 +6,7 @@
 #include <string>
 #include <fstream>
 #include <sstream>
-#include "gl.h"
+#include "../basetypes/gl.h"
 #include "renderer.h"
 
 
@@ -93,7 +93,7 @@ void GLRenderer::draw() {
 
     else if (drawmode == INDEX_DRAW) {
 
-        glDrawElements(GL_TRIANGLES, (ix->cnt)*3, GL_UNSIGNED_INT, nullptr);
+        glHCheckingCall(glDrawElements(GL_TRIANGLES, (ix->cnt)*3, GL_UNSIGNED_INT, nullptr));
     }
 
     else {
