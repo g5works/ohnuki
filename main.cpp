@@ -1,87 +1,134 @@
+//opengl
 #include <GL/glew.h>
 #include <GL/glut.h>
 #include <GLFW/glfw3.h>
+
+//print and stringops
 #include <stdio.h>
 #include <iostream>
 #include <string>
+
+//read shader files
 #include <fstream>
 #include <sstream>
+
+//custom render classes
 #include "rendering/basetypes/gl.h"
 #include "rendering/renderlib/renderer.h"
+
+//math
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 int main(void)
 {
 
-    GLRenderer rndr(PLATFORM_MAC);
+    GLRenderer rndr(PLATFORM_MAC, 640, 640);
 
-    Vertex vertices[4] = {
-       {{ -0.5f,  0.5f, 0.0f }, { 1.0f, 1.0f, 1.0f }},
-       {{  0.5f,  0.5f, 0.0f }, { 0.5f, 0.5f, 0.5f }},
-       {{ -0.5f, -0.5f, 0.0f }, { 0.5f, 0.5f, 0.5f }},
-       {{  0.5f, -0.5f, 0.0f }, { 0.2f, 0.2f, 0.2f }},
+    Vertex vertices[36] = {
+        {{ -0.5f, -0.5f, -0.5f }, {  0.5f,  0.5f,  0.5f }, { 0.0f, 0.0f }},
+        {{  0.5f, -0.5f, -0.5f }, {  0.5f,  0.5f,  0.5f }, { 1.0f, 0.0f }},
+        {{  0.5f,  0.5f, -0.5f }, {  0.5f,  0.5f,  0.5f }, { 1.0f, 1.0f }},
+        {{  0.5f,  0.5f, -0.5f }, {  0.5f,  0.5f,  0.5f }, { 1.0f, 1.0f }},
+        {{ -0.5f,  0.5f, -0.5f }, {  0.5f,  0.5f,  0.5f }, { 0.0f, 1.0f }},
+        {{ -0.5f, -0.5f, -0.5f }, {  0.5f,  0.5f,  0.5f }, { 0.0f, 0.0f }},
+
+        {{ -0.5f, -0.5f,  0.5f }, {  0.5f,  0.5f,  0.5f }, { 0.0f, 0.0f }},
+        {{  0.5f, -0.5f,  0.5f }, {  0.5f,  0.5f,  0.5f }, { 1.0f, 0.0f }},
+        {{  0.5f,  0.5f,  0.5f }, {  0.5f,  0.5f,  0.5f }, { 1.0f, 1.0f }},
+        {{  0.5f,  0.5f,  0.5f }, {  0.5f,  0.5f,  0.5f }, { 1.0f, 1.0f }},
+        {{ -0.5f,  0.5f,  0.5f }, {  0.5f,  0.5f,  0.5f }, { 0.0f, 1.0f }},
+        {{ -0.5f, -0.5f,  0.5f }, {  0.5f,  0.5f,  0.5f }, { 0.0f, 0.0f }},
+
+        {{ -0.5f,  0.5f,  0.5f }, {  0.5f,  0.5f,  0.5f }, { 1.0f, 0.0f }},
+        {{ -0.5f,  0.5f, -0.5f }, {  0.5f,  0.5f,  0.5f }, { 1.0f, 1.0f }},
+        {{ -0.5f, -0.5f, -0.5f }, {  0.5f,  0.5f,  0.5f }, { 0.0f, 1.0f }},
+        {{ -0.5f, -0.5f, -0.5f }, {  0.5f,  0.5f,  0.5f }, { 0.0f, 1.0f }},
+        {{ -0.5f, -0.5f,  0.5f }, {  0.5f,  0.5f,  0.5f }, { 0.0f, 0.0f }},
+        {{ -0.5f,  0.5f,  0.5f }, {  0.5f,  0.5f,  0.5f }, { 1.0f, 0.0f }},
+
+        {{  0.5f,  0.5f,  0.5f }, {  0.5f,  0.5f,  0.5f }, { 1.0f, 0.0f }},
+        {{  0.5f,  0.5f, -0.5f }, {  0.5f,  0.5f,  0.5f }, { 1.0f, 1.0f }},
+        {{  0.5f, -0.5f, -0.5f }, {  0.5f,  0.5f,  0.5f }, { 0.0f, 1.0f }},
+        {{  0.5f, -0.5f, -0.5f }, {  0.5f,  0.5f,  0.5f }, { 0.0f, 1.0f }},
+        {{  0.5f, -0.5f,  0.5f }, {  0.5f,  0.5f,  0.5f }, { 0.0f, 0.0f }},
+        {{  0.5f,  0.5f,  0.5f }, {  0.5f,  0.5f,  0.5f }, { 1.0f, 0.0f }},
+
+        {{ -0.5f, -0.5f, -0.5f }, {  0.5f,  0.5f,  0.5f }, { 0.0f, 1.0f }},
+        {{  0.5f, -0.5f, -0.5f }, {  0.5f,  0.5f,  0.5f }, { 1.0f, 1.0f }},
+        {{  0.5f, -0.5f,  0.5f }, {  0.5f,  0.5f,  0.5f }, { 1.0f, 0.0f }},
+        {{  0.5f, -0.5f,  0.5f }, {  0.5f,  0.5f,  0.5f }, { 1.0f, 0.0f }},
+        {{ -0.5f, -0.5f,  0.5f }, {  0.5f,  0.5f,  0.5f }, { 0.0f, 0.0f }},
+        {{ -0.5f, -0.5f, -0.5f }, {  0.5f,  0.5f,  0.5f }, { 0.0f, 1.0f }},
+
+        {{ -0.5f,  0.5f, -0.5f }, {  0.5f,  0.5f,  0.5f }, { 0.0f, 1.0f }},
+        {{  0.5f,  0.5f, -0.5f }, {  0.5f,  0.5f,  0.5f }, { 1.0f, 1.0f }},
+        {{  0.5f,  0.5f,  0.5f }, {  0.5f,  0.5f,  0.5f }, { 1.0f, 0.0f }},
+        {{  0.5f,  0.5f,  0.5f }, {  0.5f,  0.5f,  0.5f }, { 1.0f, 0.0f }},
+        {{ -0.5f,  0.5f,  0.5f }, {  0.5f,  0.5f,  0.5f }, { 0.0f, 0.0f }},
+        {{ -0.5f,  0.5f, -0.5f }, {  0.5f,  0.5f,  0.5f }, { 0.0f, 1.0f }}
     };
 
-    IndexTri indices[2] = {
-        {0,1,2},
-        {1,3,2}
-    };
-
-    Vertex vertices2[3] = {
-       {{ -0.5f,  0.5f, 0.0f }, { 1.0f, 0.0f, 0.0f }},
-       {{  0.5f,  0.5f, 0.0f }, { 0.0f, 1.0f, 0.0f }},
-       {{ -0.5f, -0.5f, 0.0f }, { 0.0f, 0.0f, 1.0f }},
-    };
 
 
-    GLVertexObject* vo = new GLVertexObject(vertices, 4);
-    GLVertexObject* vo2 = new GLVertexObject(vertices2, 3);
+    GLVertexObject* vo = new GLVertexObject(vertices, 36);
 
-    GLIndices* i = new GLIndices(indices, 2);
 
     // OpenGL now knows what we want to draw, but not how it should draw it. For that, we need shaders! (or not, kek)
     GLShaders s("shaders/vertex.glsl", "shaders/fragment.glsl");
-    GLShaders s2("shaders/vertex2.glsl", "shaders/fragment2.glsl");
 
+    GLTexture t("resources/textures/copper.png", 0);
+    GLTexture t2("resources/textures/blitter.png", 1);
 
+    rndr.set(vo);
     rndr.setShader(s);
-    rndr.set(vo2);
+
+    t.bind("copper", s);
+    t2.bind("blitter", s);
+
+    unsigned int transition = glGetUniformLocation(s.prog, "magnitude");
+    unsigned int transuniform = glGetUniformLocation(s.prog, "transform");
+
+
+    unsigned int b[4] = {1,2,3,4};
+
+    
 
     unsigned int x = 0;
-    unsigned int y = 0;
 
     while (!glfwWindowShouldClose(rndr.win))
     {
         glHClearErrors();
+  
 
-        unsigned int uni = glGetUniformLocation(s2.prog, "xtransf");
-        glUniform1f(uni, sin(0.05*x));
+        glm::mat4 trans = glm::mat4(1.0f);
 
-        if (x == 100) {
-            y++;
-            if (y%2 == 0) {
-                rndr.setShader(s);
-                rndr.set(vo2);
-            }
-            else {
-                rndr.setShader(s2);
-                rndr.set(vo, i);
-            }
-            x = 0;
-        }
-        x++;
+        //these operations are best left on the cpu as the cpu can handle them faster than the cpu due to simd instructions
+        trans = glm::rotate(trans, (float)glm::radians(x+0.1), glm::vec3(1.0, 1.0, 1.0));
+        trans = glm::scale(trans, glm::vec3(1.0f, 1.0f, 1.0f));
+
+        trans *= rndr.orthographic;
+
+        //set uniform values
+        glUniformMatrix4fv(transuniform, 1, GL_FALSE, glm::value_ptr(trans));
+        glUniform1f(transition, (0.5+(0.5*sin(((float)x)/50))));
 
 
         rndr.draw();
+
+
         glfwPollEvents();
+        x++;
     } 
 
     delete vo;
-    delete vo2;
-    delete i;
 
     glfwTerminate();
     return 0;
 }
+
+
 
 
 

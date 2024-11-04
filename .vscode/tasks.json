@@ -22,6 +22,9 @@
 				"${workspaceFolder}/*.cpp",
 				"${workspaceFolder}/rendering/basetypes/*.cpp",
 				"${workspaceFolder}/rendering/renderlib/*.cpp",
+				"${workspaceFolder}/stb_image/*.cpp",
+
+
 
 				"${workspaceFolder}/glad.c",
 				"${workspaceFolder}/dependencies/library/libglfw.3.4.dylib",

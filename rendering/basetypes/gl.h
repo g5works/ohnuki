@@ -2,6 +2,7 @@ struct Vertex {
     
     float position[3];
     float color[3];
+    float texture[2];
 
 };
 
@@ -52,5 +53,20 @@ class GLShaders {
         std::string readshaderfile(std::string shaderPath);
         unsigned int compile(const std::string &shadersource, unsigned int shadertype);
         int create(const std::string &vloc, const std::string &floc);
+
+};
+
+class GLTexture {
+
+    public:
+        unsigned int tex;
+        std::string texpath;
+        int width;
+        int height;
+        int chans;
+        int slot;
+
+        GLTexture(std::string texpath, unsigned int slot);
+        void bind(std::string suniformname, GLShaders s);
 
 };

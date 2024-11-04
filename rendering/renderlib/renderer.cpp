@@ -8,10 +8,13 @@
 #include <sstream>
 #include "../basetypes/gl.h"
 #include "renderer.h"
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 
 
-GLRenderer::GLRenderer(unsigned int platform) {
+GLRenderer::GLRenderer(unsigned int platform, int width, int height) {
 
     GLFWwindow* window; 
     {
@@ -29,7 +32,7 @@ GLRenderer::GLRenderer(unsigned int platform) {
 
 
         /* Create a windowed mode window and its OpenGL context */
-        window = glfwCreateWindow(640, 640, "opengl", NULL, NULL);
+        window = glfwCreateWindow(width, height, "opengl", NULL, NULL);
         if (!window)
         {
             glfwTerminate();
@@ -39,11 +42,18 @@ GLRenderer::GLRenderer(unsigned int platform) {
         /* Make the window's context current */
         glfwMakeContextCurrent(window);
         glfwSwapInterval(1);
+        
+
+
+
+        orthographic = glm::ortho(0.0f, (float)width, 0.0f, (float)height, 0.1f, 100.0f);
+        perspective = glm::perspective(glm::radians(45.0f), (float)width/(float)height, 0.1f, 100.0f);
 
         if (glewInit() != GLEW_OK)
             std::cout << "GLEW INIT ERROR!!" << "\n";
 
         std::cout << glGetString(GL_VERSION) << std::endl;
+
     }
 
     win = window;
@@ -73,7 +83,8 @@ void GLRenderer::set(GLVertexObject *vertices, GLIndices *indices) {
 
 void GLRenderer::draw() {
   
-    glClear(GL_COLOR_BUFFER_BIT);
+    glEnable(GL_DEPTH_TEST);  
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     if (drawmode == VERTEX_DRAW) {
 

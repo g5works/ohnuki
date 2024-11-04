@@ -7,6 +7,7 @@
 #include <fstream>
 #include <sstream>
 #include "gl.h"
+#include "../../stb_image/stb_image.h"
 
 
 // OpenGL VertexBuffer/VertexArray Abstractions
@@ -32,9 +33,14 @@ GLVertexObject::GLVertexObject(Vertex vertices[], unsigned int vs) {
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(sizeof(Vertex::position)));
 
-    //turn em on
+    //this is a pretty important one here. the 4th arg, stride, is stride from start of vertex, not stride from last param
+    //you spent an hour working on this, remember it next time.
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(sizeof(Vertex::color)+sizeof(Vertex::position)));
+
+    //turn those vertex attribs on!
     glEnableVertexAttribArray(0);
     glEnableVertexAttribArray(1);
+    glEnableVertexAttribArray(2);
 
     bind();
 
@@ -193,3 +199,72 @@ unsigned int GLShaders::compile(const std::string &shadersource, unsigned int sh
     return shader;
 
 }
+
+
+GLTexture::GLTexture(std::string texpath, unsigned int s) {
+    
+    //set the texture slot (we have from 1->31)
+    slot = s;
+    glActiveTexture(GL_TEXTURE0 + slot);
+
+
+    //set repeat mode
+    //you can actually set the parameters for each axis, so this sets both axes (as in x and y) to repeat on their respective axes
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+    //the above code does not use mipmaps and will look weird and checkery when u render it
+    //this code, however, does and will look more normal 
+    //it still uses linear scaling when shrinking, and nearest scaling when growing.
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST_MIPMAP_NEAREST);
+
+    //this function loads the image
+    //the first function is more ambiguous if you dont know opengl but the textures are flipped as opengl expects the ys to be inverted, so this function inverts those ys for you
+    stbi_set_flip_vertically_on_load(true);
+    unsigned char* texture_data = stbi_load(texpath.c_str(), &width, &height, &chans, 0);
+
+    if (texture_data) {
+
+        //this auto-sets our data and color mode for us, thats all
+        unsigned int color_mode =  chans == 4 ? GL_RGBA : GL_RGB;
+
+
+        //create and bind texture object
+        glGenTextures(1, &tex);
+        glBindTexture(GL_TEXTURE_2D, tex);
+
+        //send texture data to opengl
+        glTexImage2D(GL_TEXTURE_2D, 0, color_mode, width, height, 0, color_mode, GL_UNSIGNED_BYTE, texture_data);
+        
+        //make opengl mipmaps
+        glGenerateMipmap(GL_TEXTURE_2D);
+
+        //free image from cpu memory, as the image is now in gpu memory, and it's job is done on the cpu.
+        stbi_image_free(texture_data);
+        
+    }
+
+    else {
+        std::cout << "texture did not load properly" << std::endl;
+        exit(-1);
+    }
+
+}
+
+void GLTexture::bind(std::string suniformname, GLShaders s) {
+    
+    //use the shader as we're going to have to set a shader uniform right now
+    s.use();
+
+    //bind the texture 
+    glActiveTexture(GL_TEXTURE0 + slot);
+    glBindTexture(GL_TEXTURE_2D, tex);
+
+    //tell opengl that this texture is in slot <slot>
+    unsigned int uni = glGetUniformLocation(s.prog, suniformname.c_str());
+    glUniform1i(uni, slot);
+
+}
+
+

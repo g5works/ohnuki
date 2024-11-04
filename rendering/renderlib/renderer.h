@@ -39,8 +39,11 @@ class GLRenderer {
         unsigned int numitems;
         unsigned int drawmode;
 
+        glm::mat4 orthographic;
+        glm::mat4 perspective;
 
-        GLRenderer(unsigned int platform);
+
+        GLRenderer(unsigned int platform, int width, int height);
 
         void setShader(GLShaders shader);
 
