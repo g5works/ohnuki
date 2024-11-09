@@ -78,8 +78,8 @@ int main(void)
     // OpenGL now knows what we want to draw, but not how it should draw it. For that, we need shaders! (or not, kek)
     GLShaders s("shaders/vertex.glsl", "shaders/fragment.glsl");
 
-    GLTexture t("resources/textures/copper.png", 0);
-    GLTexture t2("resources/textures/blitter.png", 1);
+    GLTexture t("resources/textures/yippee.gif", 0);
+    GLTexture t2("resources/textures/kikuri.png", 1);
 
     rndr.set(vo);
     rndr.setShader(s);
@@ -108,7 +108,6 @@ int main(void)
         trans = glm::rotate(trans, (float)glm::radians(x+0.1), glm::vec3(1.0, 1.0, 1.0));
         trans = glm::scale(trans, glm::vec3(1.0f, 1.0f, 1.0f));
 
-        trans *= rndr.orthographic;
 
         //set uniform values
         glUniformMatrix4fv(transuniform, 1, GL_FALSE, glm::value_ptr(trans));

@@ -8,6 +8,8 @@
 #include <sstream>
 #include "../basetypes/gl.h"
 #include "renderer.h"
+
+
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -46,8 +48,8 @@ GLRenderer::GLRenderer(unsigned int platform, int width, int height) {
 
 
 
-        orthographic = glm::ortho(0.0f, (float)width, 0.0f, (float)height, 0.1f, 100.0f);
-        perspective = glm::perspective(glm::radians(45.0f), (float)width/(float)height, 0.1f, 100.0f);
+        // orthographic = glm::ortho(0.0f, (float)width, 0.0f, (float)height, 0.1f, 100.0f);
+        // perspective = glm::perspective(glm::radians(45.0f), (float)width/(float)height, 0.1f, 100.0f);
 
         if (glewInit() != GLEW_OK)
             std::cout << "GLEW INIT ERROR!!" << "\n";
